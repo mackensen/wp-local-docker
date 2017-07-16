@@ -43,9 +43,11 @@ services:
       - "./wordpress:/var/www/html"
       - "./config/php-fpm/php.ini:/usr/local/etc/php/php.ini"
       - "./config/php-fpm/docker-php-ext-xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
+      - "./config/behat:/opt/behat"
     restart: always
     extra_hosts:
       - "docker-local.dev:172.18.0.1"
+      - "wordhat.dev:172.18.0.1"
   nginx:
     depends_on:
       - phpfpm
@@ -58,3 +60,13 @@ services:
       - "./config/nginx/default.conf:/etc/nginx/conf.d/default.conf"
       - "./config/certs:/etc/nginx/certs"
     restart: always
+  selenium:
+    depends_on:
+      - nginx
+      - phpfpm
+    ports:
+      - "4444:4444"
+    image: selenium/standalone-chrome:latest
+    restart: always
+    extra_hosts:
+     - "wordhat.dev:172.18.0.1"
